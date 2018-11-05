@@ -10,7 +10,7 @@ install:
 script:
   - make lint
   - make test
-  - istanbul cover node_modules/jest/bin/jest.js -- -R spec
+  - istanbul cover node_modules/jest/bin/jest.js
 
 addons:
     code_climate:
