@@ -1,10 +1,11 @@
 {
   "name": "page-loader",
   "version": "0.0.1",
-  "description": "",
+  "description": "Downloads a page from the network and puts it in the specified folder (by default in the program launch directory)",
   "main": "dist/index.js",
   "bin": {
-    "page-loader": "dist/bin/page-loader.js"
+    "page-loader": "dist/bin/page-loader.js",
+    "open": "dist/bin/open.js"
   },
   "engines": {
     "node": ">=8"
@@ -29,7 +30,7 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "homepage": "https://github.com/MikhailGA/project-lvl3-s346/issues#readme",
+  "homepage": "https://github.com/MikhailGA/project-lvl3-s346/#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
@@ -50,9 +51,12 @@
     "flow-bin": "^0.84",
     "flow-typed": "^2.5.1",
     "jest": "^23.6.0",
-    "jest-cli": "^23.6.0"
+    "jest-cli": "^23.6.0",
+    "nock": "^10.0.2"
   },
   "dependencies": {
-    "commander": "^2.19.0"
+    "axios": "^0.18.0",
+    "commander": "^2.19.0",
+    "lodash": "^4.17.11"
   }
 }

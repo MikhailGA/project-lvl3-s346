@@ -10,7 +10,7 @@ program
   .description(description)
   .option('-o, --output [path]', 'output path', './')
   .arguments('<url>')
-  .action((url) => {
-    console.log(pageLoader(url, program.output));
+  .action((url, options) => {
+    pageLoader.pageLoad(url, options.output);
   })
   .parse(process.argv);

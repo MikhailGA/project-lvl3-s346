@@ -10,7 +10,6 @@ install:
 script:
   - make lint
   - make test
-  - node_modules/jest/bin/jest.js --coverage && cat ./coverage/lcov.info
 
 addons:
   code_climate:
@@ -20,4 +19,5 @@ before_script:
   - npm install codeclimate-test-reporter -g
 
 after_script:
+  - npm install codeclimate-test-reporter -g
   - codeclimate-test-reporter < ./coverage/lcov.info
