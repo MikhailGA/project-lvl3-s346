@@ -1,7 +1,7 @@
 # nodejs-package
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/2f0f4b2f8bd172cc3f77/maintainability)](https://codeclimate.com/github/MikhailGA/project-lvl3-s346/maintainability)
-
+[![Test Coverage](https://api.codeclimate.com/v1/badges/2f0f4b2f8bd172cc3f77/test_coverage)](https://codeclimate.com/github/MikhailGA/project-lvl3-s346/test_coverage)
 [![Build Status](https://travis-ci.org/MikhailGA/project-lvl3-s346.svg?branch=master)](https://travis-ci.org/MikhailGA/project-lvl3-s346)
 
 ## ABOUT page-loader 
