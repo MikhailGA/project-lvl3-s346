@@ -10,12 +10,11 @@ install:
 script:
   - make lint
   - make test
-  - istanbul cover node_modules/jest/bin/jest.js
+  - istanbul cover node_modules/jest/bin/jest.js -- -R spec
 
 addons:
-    code_climate:
-        repo_token:
-          secure: 57ec07a0d8e4909d7501d5e36c66b39c5228f357f15a9ef4a6a1d64492e93d81
+  code_climate:
+    repo_token: 57ec07a0d8e4909d7501d5e36c66b39c5228f357f15a9ef4a6a1d64492e93d81
 
 before_script:
   - npm install codeclimate-test-reporter istanbul -g
