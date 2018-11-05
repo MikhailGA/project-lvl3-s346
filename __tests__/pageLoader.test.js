@@ -2,6 +2,6 @@
 
 import pageLoader from '../src';
 
-test('half', () => {
+test('first rest', () => {
   expect(pageLoader()).toBeUndefined();
 });
