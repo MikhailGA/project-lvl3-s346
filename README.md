@@ -1,7 +1,7 @@
 # nodejs-package
 
-[![Code Climate](https://codeclimate.com/github/hexlet-boilerplates/javascript-package/badges/gpa.svg)](https://codeclimate.com/github/hexlet-boilerplates/javascript-package)
-[![Issue Count](https://codeclimate.com/github/hexlet-boilerplates/javascript-package/badges/issue_count.svg)](https://codeclimate.com/github/hexlet-boilerplates/javascript-package)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2f0f4b2f8bd172cc3f77/maintainability)](https://codeclimate.com/github/MikhailGA/project-lvl3-s346/maintainability)
+
 [![Build Status](https://travis-ci.org/MikhailGA/project-lvl3-s346.svg?branch=master)](https://travis-ci.org/MikhailGA/project-lvl3-s346)
 
 ## ABOUT page-loader 

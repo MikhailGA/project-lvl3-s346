@@ -5,3 +5,4 @@ flow-typed
 .tern-port
 .idea
 /.vscode/
+coverage/
