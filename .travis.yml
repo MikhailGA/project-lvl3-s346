@@ -10,7 +10,7 @@ install:
 script:
   - make lint
   - make test
-  - istanbul cover node_modules/jest/bin/jest.js -- -R spec
+  - node_modules/jest/bin/jest.js --coverage && cat ./coverage/lcov.info
 
 addons:
   code_climate:
