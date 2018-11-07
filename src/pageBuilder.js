@@ -9,7 +9,7 @@ const mapping = {
 };
 
 const prepareName = body => body.split('')
-  .map(char => (/^[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
+  .map(char => (/[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
   .join('');
 
 const isLocalURL = url => !(/https:\/\/|http:\/\//.test(url));
