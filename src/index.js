@@ -9,7 +9,7 @@ import buildLocalPage from './pageBuilder';
 const fsPromises = fs.promises;
 
 const prepareName = body => body.split('')
-  .map(char => (/^[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
+  .map(char => (/[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
   .join('');
 
 let localAssetUrlsGlobal;
@@ -17,7 +17,7 @@ let assetUrlsGlobal;
 
 const pageLoad = (url, filePath) => {
   const pageUrl = new URL(url);
-  const downloadPageName = prepareName(`${pageUrl.host}${pageUrl.pathname}`);
+  const downloadPageName = prepareName(`${pageUrl.host}${pageUrl.pathname || ''}`);
 
   const dirName = downloadPageName.concat('_files');
   const localPagePath = path.join(filePath, downloadPageName.concat('.html'));
