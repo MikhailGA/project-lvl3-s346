@@ -5,8 +5,8 @@ import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+// import debug from 'debug';
 import pageLoader from '../src';
-
 
 const fsPromises = fs.promises;
 axios.defaults.adapter = httpAdapter;
