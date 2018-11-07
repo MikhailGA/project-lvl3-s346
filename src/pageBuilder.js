@@ -8,7 +8,7 @@ const mapping = {
   link: 'href',
 };
 
-const prepareName = body => body.split('')
+const preparePageName = body => body.split('')
   .map(char => (/[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
   .join('');
 
@@ -25,7 +25,7 @@ const buildLocalPageUrls = fileUrls => fileUrls.map((url) => {
   const arr = url.substr(1).split('.');
   const ext = arr[arr.length - 1];
   const name = _.trim(arr.slice(0, arr.length - 1).join(''), '/.');
-  return prepareName(name).concat(`.${ext}`);
+  return preparePageName(name).concat(`.${ext}`);
 });
 
 export default (html, dirName) => {
