@@ -1,7 +1,7 @@
 install: install-deps install-flow-typed
 
 run:
-	npx babel-node -- 'src/bin/page-loader.js' -o /var/tmp https://Hexlet.io/courses
+	npx babel-node -- 'src/bin/page-loader.js' -o /var/tmp https://ya.ru
 
 run_open:
 	npx babel-node -- 'src/bin/open.js' /var/tmp/hexlet-io-courses.html
