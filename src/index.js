@@ -4,20 +4,22 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { resolve } from 'url';
+import _ from 'lodash';
 import buildLocalPage from './pageBuilder';
+
 
 const fsPromises = fs.promises;
 
-const prepareName = body => body.split('')
+const prepareName = body => _.trim(body.split('')
   .map(char => (/[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
-  .join('');
+  .join(''), '-');
 
 let localAssetUrlsGlobal;
 let assetUrlsGlobal;
 
 const pageLoad = (url, filePath) => {
   const pageUrl = new URL(url);
-  const downloadPageName = prepareName(`${pageUrl.host}${pageUrl.pathname || ''}`);
+  const downloadPageName = prepareName(`${pageUrl.host}${pageUrl.pathname}`);
 
   const dirName = downloadPageName.concat('_files');
   const localPagePath = path.join(filePath, downloadPageName.concat('.html'));
