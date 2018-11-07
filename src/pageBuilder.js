@@ -1,16 +1,13 @@
 import cheerio from 'cheerio';
 import path from 'path';
 import _ from 'lodash';
+import buildName from './nameBuilder';
 
 const mapping = {
   img: 'src',
   script: 'src',
   link: 'href',
 };
-
-const preparePageName = body => body.split('')
-  .map(char => (/[а-яА-ЯёЁa-zA-Z0-9]/.test(char) ? char : '-'))
-  .join('');
 
 const isLocalURL = url => !(/https:\/\/|http:\/\//.test(url));
 
@@ -22,10 +19,10 @@ const getPageUrls = (html) => {
 };
 
 const buildLocalPageUrls = fileUrls => fileUrls.map((url) => {
-  const arr = url.substr(1).split('.');
-  const ext = arr[arr.length - 1];
-  const name = _.trim(arr.slice(0, arr.length - 1).join(''), '/.');
-  return preparePageName(name).concat(`.${ext}`);
+  const pagePath = path.parse(url);
+  const rawName = `${pagePath.dir}/${pagePath.name}`;
+  const extName = pagePath.ext;
+  return buildName(rawName, extName);
 });
 
 export default (html, dirName) => {

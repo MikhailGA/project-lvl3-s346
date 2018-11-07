@@ -20,7 +20,6 @@ const assetImgPath = '/assets/test.svg';
 
 const downloadPageUrl = new URL(downloadPagePath, host);
 
-
 let downloadPage;
 let localPage;
 
@@ -51,6 +50,10 @@ beforeEach(() => {
   nock(host)
     .get(assetImgPath)
     .reply(200, img);
+
+  nock(host)
+    .get('/unknownUrl')
+    .reply(404, '');
 });
 
 test('PageLoafer test', async () => {
@@ -72,16 +75,10 @@ test('PageLoafer test', async () => {
   expect(svgAsset).toEqual(img);
 });
 
+const unknownPageUrl = new URL('/unknownUrl', host);
 test('Test errors', async () => {
-  try {
-    await pageLoader.pageLoad('badURL', './');
-  } catch (e) {
-    expect(e.message).toMatch('Invalid URL');
-  }
+  expect(() => pageLoader.pageLoad('/badUrl./', '/var/tmp/test')).toThrow();
 
-  try {
-    await pageLoader.pageLoad(downloadPageUrl.href, '/badDirectory/');
-  } catch (e) {
-    expect('ReciveAlarm').toMatch('ReciveAlarm');
-  }
+  await expect(pageLoader.pageLoad(unknownPageUrl.href, '/var/tmp/test')).rejects.toMatch(/404/);
+  await expect(pageLoader.pageLoad(downloadPageUrl.href, '|/badPath|/')).rejects.toMatch(/ENOENT/);
 });

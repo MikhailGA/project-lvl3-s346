@@ -11,6 +11,8 @@ program
   .option('-o, --output [path]', 'output path', './')
   .arguments('<url>')
   .action((url, options) => {
-    pageLoader.pageLoad(url, options.output);
+    pageLoader.pageLoad(url, options.output)
+      .then(console.log)
+      .catch(console.log);
   })
   .parse(process.argv);
