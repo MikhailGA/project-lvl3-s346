@@ -8,6 +8,7 @@
 
 * [Step1](https://asciinema.org/a/FCJhYNyNhosc0i7f6Hqp4aoKB)
 * [Step2](https://asciinema.org/a/6g3Gu9Cp1IEiUglYO1yGQ5cQX)
+* [Step3](https://asciinema.org/a/UIoGadUyubZYxwIgbeDbUhBGN)
 
 ## ABOUT page-loader 
 The utility downloads a page from the network and puts it in the specified folder (by default, in the program launch directory).
