@@ -10,6 +10,7 @@
 * [Step2](https://asciinema.org/a/6g3Gu9Cp1IEiUglYO1yGQ5cQX)
 * [Step3](https://asciinema.org/a/UIoGadUyubZYxwIgbeDbUhBGN)
 * [Step4](https://asciinema.org/a/uqcnPyH2RudttOgR0DDt6lVbz)
+* [Step5](https://asciinema.org/a/FHWF6hif0CAc5DYrJ5oTem6P6)
 
 
 ## ABOUT page-loader 
