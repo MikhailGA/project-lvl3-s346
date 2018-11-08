@@ -55,7 +55,7 @@ const pageLoad = (url, filePath) => {
       .catch((err) => {
         d(`Application failed with error: '${err.message}'`);
         process.exitCode = 10;
-        return wrapReject(err.message);
+        return wrapReject(new Error(err.message));
       });
   });
 };
