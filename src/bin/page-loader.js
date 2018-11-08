@@ -11,8 +11,17 @@ program
   .option('-o, --output [path]', 'output path', './')
   .arguments('<url>')
   .action((url, options) => {
-    pageLoader.pageLoad(url, options.output)
-      .then(console.log)
-      .catch(console.log);
+    try {
+      pageLoader.pageLoad(url, options.output)
+        .then(console.log)
+        .catch(console.error);
+    } catch (e) {
+      console.error(e.message);
+      process.exitCode = 5;
+    }
   })
   .parse(process.argv);
+
+process.on('exit', (code) => {
+  console.error(`About to exit with code: ${code}`);
+});

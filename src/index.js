@@ -43,17 +43,18 @@ const pageLoad = (url, filePath) => {
         return Promise.all(localFileData);
       })
       .then((assetArr) => {
-        d('Local file data uploaded successfully!');
+        d('Local file uploaded successfully!');
         const writeLocalAssets = localAssetUrlsGlobal.map((localAssetUrl, i) => (
           fsPromises.writeFile(path.join(assetDirPath, localAssetUrl), assetArr[i].data)));
         return Promise.all(writeLocalAssets);
       })
       .then(() => {
-        d(`Local file data is successfully saved in the directory: '${assetDirPath}'`);
-        return wrapResolve('download and save was successful!');
+        d(`Local file is successfully saved in the directory: '${assetDirPath}'`);
+        return wrapResolve('Download and save was successful!');
       })
       .catch((err) => {
         d(`Application failed with error: '${err.message}'`);
+        process.exitCode = 10;
         return wrapReject(err.message);
       });
   });

@@ -76,9 +76,10 @@ test('PageLoafer test', async () => {
 });
 
 const unknownPageUrl = new URL('/unknownUrl', host);
-test('Test errors', async () => {
-  expect(() => pageLoader.pageLoad('/badUrl./', '/var/tmp/test')).toThrow();
 
-  await expect(pageLoader.pageLoad(unknownPageUrl.href, '/var/tmp/test')).rejects.toMatch(/404/);
-  await expect(pageLoader.pageLoad(downloadPageUrl.href, '|/badPath|/')).rejects.toMatch(/ENOENT/);
+test('Test errors', async () => {
+  expect(() => pageLoader.pageLoad('/InvalidUrl/', '/var/tmp/test')).toThrowError('Invalid URL: /InvalidUrl/');
+
+  await expect(pageLoader.pageLoad(unknownPageUrl.href, '/var/tmp/test')).rejects.toMatch(/code 404/);
+  await expect(pageLoader.pageLoad(downloadPageUrl.href, '/unknownPath')).rejects.toMatch(/ENOENT/);
 });
