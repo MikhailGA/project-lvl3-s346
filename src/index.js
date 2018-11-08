@@ -55,12 +55,16 @@ const pageLoad = (url, filePath) => {
       .catch((err) => {
         d(`Application failed with error: '${err.message}'`);
         process.exitCode = 10;
-        return wrapReject(new Error(err.message));
+        return wrapReject(err);
       });
   });
 };
 
 const open = filePath => fsPromises.readFile(filePath, 'utf8');
+
+process.on('exit', (code) => {
+  console.error(`About to exit with code: ${code}`);
+});
 
 export default {
   pageLoad,
