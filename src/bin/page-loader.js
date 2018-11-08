@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import program from 'commander';
+// import Listr from 'listr';
 import pageLoader from '..';
 import pjson from '../../package.json';
 
@@ -12,7 +13,6 @@ program
   .arguments('<url>')
   .action((url, options) => {
     pageLoader.pageLoad(url, options.output)
-      .then(console.log)
-      .catch(console.error);
+      .catch(err => console.error(err.message));
   })
   .parse(process.argv);

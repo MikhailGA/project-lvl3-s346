@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { resolve } from 'url';
+import Listr from 'listr';
+import StateMachine from 'javascript-state-machine';
 import buildLocalPage from './pageBuilder';
 import buildName from './nameBuilder';
 
@@ -11,6 +13,40 @@ const d = debug('page-loader');
 d('booting PageLoader application');
 
 const fsPromises = fs.promises;
+
+const Resource = StateMachine.factory({
+  init: 'inititState',
+  transitions: [
+    { name: 'download', from: 'inititState', to: 'downloaded' },
+    { name: 'save', from: 'downloaded', to: 'saved' },
+  ],
+});
+
+const writePageToFile = (ctx, dirName, localPagePath) => {
+  const { html, assetUrls, localAssetUrls } = buildLocalPage(ctx.page, dirName);
+  d(`Assets URL: ${assetUrls}`);
+  d(`LocalAssets URL: ${localAssetUrls}`);
+  ctx.assetUrls = assetUrls;
+  ctx.localAssetUrls = localAssetUrls;
+  return fsPromises.writeFile(localPagePath, html);
+};
+
+const getAssets = (ctx, pageUrl) => {
+  d(`Directory '${ctx.assetDirPath}' was successfully created`);
+  d(`Get asset from URL: ${pageUrl}`);
+  const localFileData = ctx.assetUrls.map(assetUrl => (
+    axios.get(resolve(pageUrl.href, assetUrl), 'arraybuffer')));
+  return Promise.all(localFileData);
+};
+
+const writeAssetsToFiles = (ctx, assetDirPath) => {
+  d('Local file uploaded successfully!');
+  return fsPromises.mkdir(assetDirPath).then(() => {
+    const writeLocalAssets = ctx.localAssetUrls.map((localAssetUrl, i) => (
+      fsPromises.writeFile(path.join(assetDirPath, localAssetUrl), ctx.assetsArr[i].data)));
+    Promise.all(writeLocalAssets);
+  });
+};
 
 const pageLoad = (url, filePath) => {
   d('Run pageLoad');
@@ -21,50 +57,52 @@ const pageLoad = (url, filePath) => {
   const localPagePath = path.join(filePath, buildName(downloadPageName, '.html'));
   const assetDirPath = path.join(filePath, dirName);
 
-  let localAssetUrlsGlobal;
-  let assetUrlsGlobal;
+  const page = new Resource();
+  const assets = new Resource();
 
-  return new Promise((wrapResolve, wrapReject) => {
-    axios.get(pageUrl.href)
-      .then((response) => {
-        d(`Response from URL: ${pageUrl.href} was received`);
-        const { html, assetUrls, localAssetUrls } = buildLocalPage(response.data, dirName);
-        d(`Assets URL: ${assetUrls}`);
-        d(`LocalAssets URL: ${localAssetUrls}`);
-        assetUrlsGlobal = assetUrls;
-        localAssetUrlsGlobal = localAssetUrls;
-        return fsPromises.writeFile(localPagePath, html);
-      })
-      .then(() => fsPromises.mkdir(assetDirPath))
-      .then(() => {
-        d(`Directory '${assetDirPath}' was successfully created`);
-        const localFileData = assetUrlsGlobal.map(assetUrl => (
-          axios.get(resolve(pageUrl.href, assetUrl), 'arraybuffer')));
-        return Promise.all(localFileData);
-      })
-      .then((assetArr) => {
-        d('Local file uploaded successfully!');
-        const writeLocalAssets = localAssetUrlsGlobal.map((localAssetUrl, i) => (
-          fsPromises.writeFile(path.join(assetDirPath, localAssetUrl), assetArr[i].data)));
-        return Promise.all(writeLocalAssets);
-      })
-      .then(() => {
-        d(`Local file is successfully saved in the directory: '${assetDirPath}'`);
-        return wrapResolve('Download and save was successful!');
-      })
-      .catch((err) => {
-        d(`Application failed with error: '${err.message}'`);
-        process.exitCode = 10;
-        return wrapReject(err);
-      });
+  const task = new Listr([
+    {
+      title: 'Start download page',
+      task: ctx => axios.get(pageUrl.href).then((res) => {
+        ctx.page = res.data;
+        page.download();
+      }),
+    },
+    {
+      title: 'Write Page To File',
+      enabled: page.state === 'downloaded',
+      task: ctx => writePageToFile(ctx, dirName, localPagePath).then(() => {
+        page.save();
+      }),
+    },
+    {
+      title: 'Load page assets',
+      enabled: page.state === 'downloaded',
+      task: ctx => getAssets(ctx, pageUrl).then((assetsArr) => {
+        ctx.assetsArr = assetsArr;
+        assets.download();
+      }),
+    },
+    {
+      title: 'Save assets to dir',
+      enabled: assets.state === 'downloaded',
+      task: ctx => writeAssetsToFiles(ctx, assetDirPath).then(() => {
+        assets.save();
+      }),
+    },
+    {
+      title: 'Download and save was successful!',
+      enabled: () => page.state === 'saved' && assets.state === 'saved',
+      task: () => 'Download and save was successful!',
+    },
+  ]);
+  return task.run({}).catch((err) => {
+    process.exitCode = 10;
+    return Promise.reject(err);
   });
 };
 
 const open = filePath => fsPromises.readFile(filePath, 'utf8');
-
-process.on('exit', (code) => {
-  console.error(`About to exit with code: ${code}`);
-});
 
 export default {
   pageLoad,
