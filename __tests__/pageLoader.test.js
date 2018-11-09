@@ -5,7 +5,7 @@ import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import pageLoader from '../src';
+import pageLoad from '../src';
 
 const fsPromises = fs.promises;
 axios.defaults.adapter = httpAdapter;
@@ -67,7 +67,7 @@ beforeEach(() => {
 test('PageLoafer test', async () => {
   const tmpPath = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'test-'));
 
-  await pageLoader.pageLoad(downloadPageUrl.href, tmpPath);
+  await pageLoad(downloadPageUrl.href, tmpPath);
 
   const filePath = path.join(tmpPath, '/hexlet-io-courses.html');
   const result = await fsPromises.readFile(filePath, 'utf8');
@@ -86,8 +86,8 @@ test('PageLoafer test', async () => {
 const unknownPageUrl = new URL('/unknownUrl', host);
 
 test('Test errors', async () => {
-  expect(() => pageLoader.pageLoad('/InvalidUrl/', '/var/tmp/test')).toThrowError('Invalid URL: /InvalidUrl/');
+  expect(() => pageLoad('/InvalidUrl/', '/var/tmp/test')).toThrowError('Invalid URL: /InvalidUrl/');
 
-  await expect(pageLoader.pageLoad(unknownPageUrl.href, '/var/tmp/test')).rejects.toThrowError(/code 404/);
-  await expect(pageLoader.pageLoad(downloadPageUrl.href, '/unknownPath')).rejects.toThrowError(/ENOENT/);
+  await expect(pageLoad(unknownPageUrl.href, '/var/tmp/test')).rejects.toThrowError(/code 404/);
+  await expect(pageLoad(downloadPageUrl.href, '/unknownPath')).rejects.toThrowError(/ENOENT/);
 });

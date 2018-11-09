@@ -54,7 +54,7 @@ const getWriteToFileTasks = (ctx, assetDirPath) => {
   ));
 };
 
-const pageLoad = (url, filePath) => {
+export default (url, filePath) => {
   d('Run pageLoad');
   const pageUrl = new URL(url);
   const downloadPageName = `${pageUrl.host}${pageUrl.pathname}`;
@@ -95,11 +95,4 @@ const pageLoad = (url, filePath) => {
     process.exitCode = 10;
     return Promise.reject(err);
   });
-};
-
-const open = filePath => fsPromises.readFile(filePath, 'utf8');
-
-export default {
-  pageLoad,
-  open,
 };
