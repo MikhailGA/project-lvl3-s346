@@ -5,7 +5,7 @@ import path from 'path';
 import axios from 'axios';
 import { resolve } from 'url';
 import Listr from 'listr';
-import StateMachine from 'javascript-state-machine';
+import { isNull } from 'lodash';
 import buildLocalPage from './pageBuilder';
 import buildName from './nameBuilder';
 
@@ -14,16 +14,8 @@ d('booting PageLoader application');
 
 const fsPromises = fs.promises;
 
-const Resource = StateMachine.factory({
-  init: 'inititState',
-  transitions: [
-    { name: 'download', from: 'inititState', to: 'downloaded' },
-    { name: 'save', from: 'downloaded', to: 'saved' },
-  ],
-});
-
 const writePageToFile = (ctx, dirName, localPagePath) => {
-  const { html, assetUrls, localAssetUrls } = buildLocalPage(ctx.page, dirName);
+  const { html, assetUrls, localAssetUrls } = buildLocalPage(ctx.html, dirName);
   d(`Assets URL: ${assetUrls}`);
   d(`LocalAssets URL: ${localAssetUrls}`);
   ctx.assetUrls = assetUrls;
@@ -31,21 +23,35 @@ const writePageToFile = (ctx, dirName, localPagePath) => {
   return fsPromises.writeFile(localPagePath, html);
 };
 
-const getAssets = (ctx, pageUrl) => {
+const getAssetsLoadTasks = (ctx, pageUrl) => {
   d(`Directory '${ctx.assetDirPath}' was successfully created`);
   d(`Get asset from URL: ${pageUrl}`);
-  const localFileData = ctx.assetUrls.map(assetUrl => (
-    axios.get(resolve(pageUrl.href, assetUrl), 'arraybuffer')));
-  return Promise.all(localFileData);
+  return ctx.assetUrls.map((assetUrl, i) => (
+    {
+      title: `Download: "${assetUrl}"`,
+      task: (context, teskObj) => axios.get(resolve(pageUrl.href, assetUrl), 'arraybuffer')
+        .then(({ data }) => {
+          context.assetsArr[i] = data; //eslint-disable-line
+        })
+        .catch(() => {
+          context.assetsArr[i] = null; //eslint-disable-line
+          context.localAssetUrls[i] = null; //eslint-disable-line
+          teskObj.skip(`${assetUrl} load failed!!! Skipping!`);
+        }),
+    }
+  ));
 };
 
-const writeAssetsToFiles = (ctx, assetDirPath) => {
-  d('Local file uploaded successfully!');
-  return fsPromises.mkdir(assetDirPath).then(() => {
-    const writeLocalAssets = ctx.localAssetUrls.map((localAssetUrl, i) => (
-      fsPromises.writeFile(path.join(assetDirPath, localAssetUrl), ctx.assetsArr[i].data)));
-    Promise.all(writeLocalAssets);
-  });
+const getWriteToFileTasks = (ctx, assetDirPath) => {
+  d(`Local file uploaded ${ctx.localAssetUrls}!`);
+  const assetsArr = ctx.assetsArr.filter(el => !isNull(el));
+  const localAssetUrls = ctx.localAssetUrls.filter(el => !isNull(el));
+  return localAssetUrls.map((localAssetUrl, i) => (
+    {
+      title: `Write assets "${localAssetUrl}" to: "${assetDirPath}"`,
+      task: () => fsPromises.writeFile(path.join(assetDirPath, localAssetUrl), assetsArr[i]),
+    }
+  ));
 };
 
 const pageLoad = (url, filePath) => {
@@ -57,46 +63,35 @@ const pageLoad = (url, filePath) => {
   const localPagePath = path.join(filePath, buildName(downloadPageName, '.html'));
   const assetDirPath = path.join(filePath, dirName);
 
-  const page = new Resource();
-  const assets = new Resource();
-
   const task = new Listr([
     {
-      title: 'Start download page',
+      title: `Download page. URL: "${pageUrl.href}"`,
       task: ctx => axios.get(pageUrl.href).then((res) => {
-        ctx.page = res.data;
-        page.download();
+        ctx.html = res.data;
       }),
     },
     {
-      title: 'Write Page To File',
-      enabled: page.state === 'downloaded',
-      task: ctx => writePageToFile(ctx, dirName, localPagePath).then(() => {
-        page.save();
-      }),
+      title: `Write page to: "${localPagePath}"`,
+      task: ctx => writePageToFile(ctx, dirName, localPagePath),
     },
     {
       title: 'Load page assets',
-      enabled: page.state === 'downloaded',
-      task: ctx => getAssets(ctx, pageUrl).then((assetsArr) => {
-        ctx.assetsArr = assetsArr;
-        assets.download();
-      }),
+      task: ctx => new Listr(getAssetsLoadTasks(ctx, pageUrl), { concurrent: true }),
+    },
+    {
+      title: `Make dir for page assets. Path ${assetDirPath}`,
+      task: () => fsPromises.mkdir(assetDirPath),
     },
     {
       title: 'Save assets to dir',
-      enabled: assets.state === 'downloaded',
-      task: ctx => writeAssetsToFiles(ctx, assetDirPath).then(() => {
-        assets.save();
-      }),
+      task: ctx => new Listr(getWriteToFileTasks(ctx, assetDirPath), { concurrent: true }),
     },
     {
-      title: 'Download and save was successful!',
-      enabled: () => page.state === 'saved' && assets.state === 'saved',
-      task: () => 'Download and save was successful!',
+      title: 'Page download and save completed',
+      task: () => 'Finish',
     },
   ]);
-  return task.run({}).catch((err) => {
+  return task.run({ assetsArr: [] }).catch((err) => {
     process.exitCode = 10;
     return Promise.reject(err);
   });

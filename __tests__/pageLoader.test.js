@@ -5,7 +5,6 @@ import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-// import debug from 'debug';
 import pageLoader from '../src';
 
 const fsPromises = fs.promises;
@@ -16,7 +15,7 @@ const downloadPagePath = '/courses';
 const assetCSSPath = '/assets/application.css';
 const assetJSPath = '/assets/application.js';
 const assetImgPath = '/assets/test.svg';
-
+const assetBadRequest = '/assets/BadRequestImg.img';
 
 const downloadPageUrl = new URL(downloadPagePath, host);
 
@@ -37,19 +36,28 @@ beforeAll(async () => {
 beforeEach(() => {
   nock(host)
     .get(downloadPagePath)
+    .delay(1000)
     .reply(200, downloadPage);
 
   nock(host)
     .get(assetCSSPath)
+    .delay(2000)
     .reply(200, appCss);
 
   nock(host)
     .get(assetJSPath)
+    .delay(3000)
     .reply(200, appJs);
 
   nock(host)
     .get(assetImgPath)
+    .delay(1000)
     .reply(200, img);
+
+  nock(host)
+    .get(assetBadRequest)
+    .delay(1000)
+    .reply(404, '');
 
   nock(host)
     .get('/unknownUrl')

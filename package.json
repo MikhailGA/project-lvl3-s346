@@ -37,6 +37,7 @@
     "@babel/node": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-flow": "^7.0.0",
+    "@babel/traverse": "^7.1.5",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -60,7 +61,6 @@
     "debug": "^4.1.0",
     "listr": "^0.14.2",
     "lodash": "^4.17.11",
-    "regenerator-runtime": "^0.12.1",
-    "javascript-state-machine": "^3.1.0"
+    "regenerator-runtime": "^0.12.1"
   }
 }

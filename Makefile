@@ -1,10 +1,7 @@
 install: install-deps install-flow-typed
 
 run:
-	npx babel-node -- 'src/bin/page-loader.js' -o /var/tmp/test https://ya.ru
-
-run_test:
-	npx babel-node -- 'src/test.js'
+	npx babel-node -- 'src/bin/page-loader.js' -o /var/tmp/test https://yandex.ru/
 
 debug:
 	DEBUG='page-loader' npx babel-node -- 'src/bin/page-loader.js' -o /var/tmp/test https://ya.ru
